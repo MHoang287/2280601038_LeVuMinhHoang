@@ -1,0 +1,76 @@
+﻿@model IEnumerable<_2280601038_LeVuMinhHoang.Models.Category>
+
+@{
+    ViewData["Title"] = "Danh sách Danh mục";
+}
+
+<div class="container mt-4">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h2 class="mb-0">Danh sách Danh mục</h2>
+            <a asp-action="Add" class="btn btn-light">
+                <i class="bi bi-plus-circle"></i> Thêm Danh mục
+            </a>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover table-striped">
+                    <thead class="table-light">
+                        <tr>
+                            <th><i class="bi bi-tag me-2"></i>Tên Danh mục</th>
+                            <th>Số lượng sản phẩm</th>
+                            <th>Chức năng</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.Any())
+                        {
+                            @foreach (var category in Model)
+                            {
+                                <tr>
+                                    <td>
+                                        <span class="badge bg-primary me-2">
+                                            <i class="bi bi-tag-fill"></i>
+                                        </span>
+                                        @category.Name
+                                    </td>
+                                    <td>
+                                        @* Nếu có thuộc tính Products, có thể hiển thị số lượng sản phẩm *@
+                                        @(category.Products?.Count ?? 0)
+                                    </td>
+                                    <td>
+                                        <div class="btn-group">
+                                            <a asp-action="Update" asp-route-id="@category.Id" class="btn btn-sm btn-primary">
+                                                <i class="bi bi-pencil"></i> Sửa
+                                            </a>
+                                            <a asp-action="Delete" asp-route-id="@category.Id" class="btn btn-sm btn-danger">
+                                                <i class="bi bi-trash"></i> Xóa
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="3" class="text-center p-4">
+                                    <div class="alert alert-info mb-0">
+                                        <i class="bi bi-info-circle-fill me-2"></i>
+                                        Chưa có danh mục nào. Nhấn "Thêm Danh mục" để tạo danh mục mới.
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="card-footer">
+            <div class="text-muted">
+                <i class="bi bi-info-circle me-1"></i>
+                Tổng số danh mục: @Model.Count()
+            </div>
+        </div>
+    </div>
+</div>

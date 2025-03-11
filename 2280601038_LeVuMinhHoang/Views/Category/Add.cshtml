@@ -1,0 +1,40 @@
+﻿@model _2280601038_LeVuMinhHoang.Models.Category
+
+@{
+    ViewData["Title"] = "Thêm Danh mục";
+}
+
+<div class="container mt-4">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h2 class="mb-0">Thêm Danh mục</h2>
+        </div>
+        <div class="card-body">
+            <form asp-action="Add" method="post">
+                <div class="form-group mb-3">
+                    <label asp-for="Name" class="form-label fw-bold">Tên Danh mục</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-tag-fill"></i></span>
+                        <input asp-for="Name" class="form-control" placeholder="Nhập tên danh mục" />
+                    </div>
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                </div>
+
+                <div class="mt-4 d-flex justify-content-between">
+                    <a asp-action="Index" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left"></i> Quay lại
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-plus-circle"></i> Thêm Danh mục
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
