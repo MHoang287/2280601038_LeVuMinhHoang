@@ -1,8 +1,39 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@model IEnumerable<_2280601038_LeVuMinhHoang.Models.Product>
+
+@{
+    ViewData["Title"] = "Trang chủ";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="container mt-4">
+    <h1 class="text-center mb-4">Danh sách sản phẩm</h1>
+
+    <div class="row">
+        @foreach (var product in Model)
+        {
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    @if (!string.IsNullOrEmpty(product.ImageUrl))
+                    {
+                        <img src="@product.ImageUrl" class="card-img-top" alt="@product.Name" style="height: 200px; object-fit: cover;">
+                    }
+                    else
+                    {
+                        <img src="/images/no-image.jpg" class="card-img-top" alt="No Image" style="height: 200px; object-fit: cover;">
+                    }
+                    <div class="card-body">
+                        <h5 class="card-title">@product.Name</h5>
+                        <p class="card-text text-truncate">@product.Description</p>
+                        <p class="card-text fw-bold text-danger">@product.Price.ToString("N0") VNĐ</p>
+                        <div class="d-flex justify-content-between">
+                            <a asp-controller="Product" asp-action="Display" asp-route-id="@product.Id" class="btn btn-primary">Xem chi tiết</a>
+                            <a href="#" class="btn btn-success">Thêm vào giỏ</a>
+                        </div>
+                    </div>
+                    <div class="card-footer text-muted">
+                        <small>Danh mục: @product.Category?.Name</small>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
 </div>

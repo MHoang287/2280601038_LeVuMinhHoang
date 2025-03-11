@@ -12,12 +12,18 @@ namespace _2280601038_LeVuMinhHoang.Repository
         }
         public async Task<IEnumerable<Category>> GetAllAsync()
         {
-            return await _context.Categories.ToListAsync();
+            return await _context.Categories
+                                 .Include(c => c.Products) // Load sản phẩm kèm theo danh mục
+                                 .ToListAsync();
         }
-        public async Task<Category> GetByIdAsync(int id)
+
+        public async Task<Category?> GetByIdAsync(int id)
         {
-            return await _context.Categories.FindAsync(id);
+            return await _context.Categories
+                                 .Include(c => c.Products) // Load sản phẩm kèm theo danh mục
+                                 .FirstOrDefaultAsync(c => c.Id == id);
         }
+
         public async Task AddAsync(Category Category)
         {
             _context.Categories.Add(Category);

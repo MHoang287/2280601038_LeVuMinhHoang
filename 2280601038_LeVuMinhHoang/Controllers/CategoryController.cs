@@ -1,6 +1,7 @@
 ﻿using _2280601038_LeVuMinhHoang.Repository;
 using Microsoft.AspNetCore.Mvc;
 using _2280601038_LeVuMinhHoang.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace _2280601038_LeVuMinhHoang.Controllers
 {

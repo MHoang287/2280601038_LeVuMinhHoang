@@ -42,6 +42,7 @@ namespace _2280601038_LeVuMinhHoang.Controllers
             return View(product);
         }
 
+
         public async Task<IActionResult> Display(int id)
         {
             var product = await _productRepository.GetByIdAsync(id);
@@ -95,6 +96,22 @@ namespace _2280601038_LeVuMinhHoang.Controllers
         {
             await _productRepository.DeleteAsync(id);
             return RedirectToAction(nameof(Index));
+        }
+
+        public async Task<IActionResult> Search(string searchTerm)
+        {
+            if (string.IsNullOrWhiteSpace(searchTerm))
+            {
+                return RedirectToAction(nameof(Index));
+            }
+
+            var products = await _productRepository.GetAllAsync();
+            var filteredProducts = products
+                .Where(p => p.Name.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                            p.Description.Contains(searchTerm, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+
+            return View("Index", filteredProducts);
         }
     }
 }

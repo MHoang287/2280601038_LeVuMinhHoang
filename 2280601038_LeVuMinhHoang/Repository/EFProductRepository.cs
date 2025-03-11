@@ -20,8 +20,16 @@ namespace _2280601038_LeVuMinhHoang.Repository
         }
         public async Task AddAsync(Product product)
         {
-            _context.Products.Add(product);
-            await _context.SaveChangesAsync();
+            try
+            {
+                _context.Products.Add(product);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                throw;
+            }
         }
         public async Task UpdateAsync(Product product)
         {
