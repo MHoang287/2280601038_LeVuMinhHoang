@@ -1,8 +1,8 @@
-﻿using _2280601038_LeVuMinhHoang.Models;
-using _2280601038_LeVuMinhHoang.Repository;
-using Microsoft.AspNetCore.Authorization;
+﻿using _2280601038_LeVuMinhHoang.Repository;
 using Microsoft.AspNetCore.Mvc;
+using _2280601038_LeVuMinhHoang.Models;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Authorization;
 
 namespace _2280601038_LeVuMinhHoang.Areas.Admin.Controllers
 {
@@ -12,8 +12,8 @@ namespace _2280601038_LeVuMinhHoang.Areas.Admin.Controllers
     {
         private readonly IProductRepository _productRepository;
         private readonly ICategoryRepository _categoryRepository;
-        public ProductController(IProductRepository productRepository,
-        ICategoryRepository categoryRepository)
+
+        public ProductController(IProductRepository productRepository, ICategoryRepository categoryRepository)
         {
             _productRepository = productRepository;
             _categoryRepository = categoryRepository;
@@ -25,7 +25,7 @@ namespace _2280601038_LeVuMinhHoang.Areas.Admin.Controllers
             return View(products);
         }
 
-        public async Task<IActionResult> AddAsync()
+        public async Task<IActionResult> Add()
         {
             var categories = await _categoryRepository.GetAllAsync();
             ViewBag.Categories = new SelectList(categories, "Id", "Name");
@@ -45,17 +45,6 @@ namespace _2280601038_LeVuMinhHoang.Areas.Admin.Controllers
             return View(product);
         }
 
-
-        public async Task<IActionResult> Display(int id)
-        {
-            var product = await _productRepository.GetByIdAsync(id);
-            if (product == null)
-            {
-                return NotFound();
-            }
-            return View(product);
-        }
-
         public async Task<IActionResult> Update(int id)
         {
             var product = await _productRepository.GetByIdAsync(id);
@@ -64,8 +53,7 @@ namespace _2280601038_LeVuMinhHoang.Areas.Admin.Controllers
                 return NotFound();
             }
             var categories = await _categoryRepository.GetAllAsync();
-            ViewBag.Categories = new SelectList(categories, "Id", "Name",
-            product.CategoryId);
+            ViewBag.Categories = new SelectList(categories, "Id", "Name", product.CategoryId);
             return View(product);
         }
 
@@ -94,11 +82,21 @@ namespace _2280601038_LeVuMinhHoang.Areas.Admin.Controllers
             return View(product);
         }
 
-        [HttpPost, ActionName("DeleteConfirmed")]
+        [HttpPost, ActionName("Delete")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             await _productRepository.DeleteAsync(id);
             return RedirectToAction(nameof(Index));
+        }
+
+        public async Task<IActionResult> Display(int id)
+        {
+            var product = await _productRepository.GetByIdAsync(id);
+            if (product == null)
+            {
+                return NotFound();
+            }
+            return View(product);
         }
 
         public async Task<IActionResult> Search(string searchTerm)
