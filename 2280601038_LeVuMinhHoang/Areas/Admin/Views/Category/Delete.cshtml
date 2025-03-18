@@ -1,28 +1,54 @@
 ﻿@model _2280601038_LeVuMinhHoang.Models.Category
 
 @{
-    ViewData["Title"] = "Delete";
+    ViewData["Title"] = "Xóa danh mục";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Delete</h1>
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow border-danger">
+                <div class="card-header bg-danger text-white">
+                    <h3 class="mb-0"><i class="bi bi-exclamation-triangle me-2"></i>Xóa danh mục</h3>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-warning">
+                        <i class="bi bi-exclamation-circle me-2"></i>
+                        <strong>Cảnh báo:</strong> Bạn có chắc chắn muốn xóa danh mục này? Hành động này không thể hoàn tác.
+                    </div>
 
-<h3>Are you sure you want to delete this?</h3>
-<div>
-    <h4>Category</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Name)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Name)
-        </dd>
-    </dl>
-    
-    <form asp-action="Delete">
-        <input type="hidden" asp-for="Id" />
-        <input type="submit" value="Delete" class="btn btn-danger" /> |
-        <a asp-action="Index">Back to List</a>
-    </form>
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <h5 class="card-title">Thông tin danh mục</h5>
+                            <div class="mb-2">
+                                <label class="fw-bold">Tên danh mục:</label>
+                                <span class="ms-2">@Model.Name</span>
+                            </div>
+
+                            @if (Model.Products?.Count > 0)
+                            {
+                                <div class="alert alert-danger">
+                                    <i class="bi bi-exclamation-octagon me-2"></i>
+                                    Danh mục này hiện có <strong>@Model.Products.Count</strong> sản phẩm. Việc xóa danh mục có thể ảnh hưởng đến các sản phẩm liên quan.
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                    <form asp-action="Delete" method="post">
+                        <input type="hidden" asp-for="Id" />
+                        <div class="d-flex justify-content-between mt-4">
+                            <a asp-action="Index" class="btn btn-secondary">
+                                <i class="bi bi-arrow-left me-1"></i> Quay lại
+                            </a>
+                            <button type="submit" class="btn btn-danger">
+                                <i class="bi bi-trash me-1"></i> Xác nhận xóa
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

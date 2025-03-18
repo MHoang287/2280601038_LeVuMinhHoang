@@ -1,15 +1,15 @@
 ﻿@model IEnumerable<_2280601038_LeVuMinhHoang.Models.Category>
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Danh mục sản phẩm";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <div class="container mt-4">
-    <div class="card shadow-sm">
+    <div class="card shadow">
         <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-            <h2 class="mb-0">Danh sách Danh mục</h2>
+            <h2 class="mb-0">Danh mục sản phẩm</h2>
             <a asp-action="Add" class="btn btn-light">
-                <i class="bi bi-plus-circle"></i> Thêm Danh mục
+                <i class="bi bi-plus-circle"></i> Thêm danh mục
             </a>
         </div>
         <div class="card-body">
@@ -17,9 +17,9 @@
                 <table class="table table-hover table-striped">
                     <thead class="table-light">
                         <tr>
-                            <th><i class="bi bi-tag me-2"></i>Tên Danh mục</th>
-                            <th>Số lượng sản phẩm</th>
-                            <th>Chức năng</th>
+                            <th scope="col" class="fw-bold"><i class="bi bi-tag me-2"></i>Tên danh mục</th>
+                            <th scope="col" class="fw-bold"><i class="bi bi-box me-2"></i>Số lượng sản phẩm</th>
+                            <th scope="col" class="fw-bold"><i class="bi bi-gear me-2"></i>Thao tác</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -32,17 +32,19 @@
                                         <span class="badge bg-primary me-2">
                                             <i class="bi bi-tag-fill"></i>
                                         </span>
-                                        @category.Name
+                                        <span class="fw-medium">@category.Name</span>
                                     </td>
                                     <td>
-                                        @(category.Products?.Count ?? 0)
+                                        <span class="badge bg-secondary rounded-pill">
+                                            @(category.Products?.Count ?? 0)
+                                        </span>
                                     </td>
                                     <td>
                                         <div class="btn-group">
-                                            <a asp-action="Update" asp-route-id="@category.Id" class="btn btn-sm btn-primary">
+                                            <a asp-action="Update" asp-route-id="@category.Id" class="btn btn-sm btn-outline-primary">
                                                 <i class="bi bi-pencil"></i> Sửa
                                             </a>
-                                            <a asp-action="Delete" asp-route-id="@category.Id" class="btn btn-sm btn-danger">
+                                            <a asp-action="Delete" asp-route-id="@category.Id" class="btn btn-sm btn-outline-danger">
                                                 <i class="bi bi-trash"></i> Xóa
                                             </a>
                                         </div>
@@ -54,9 +56,9 @@
                         {
                             <tr>
                                 <td colspan="3" class="text-center p-4">
-                                    <div class="alert alert-info mb-0">
-                                        <i class="bi bi-info-circle-fill me-2"></i>
-                                        Chưa có danh mục nào. Nhấn "Thêm Danh mục" để tạo danh mục mới.
+                                    <div class="alert alert-info mb-0 d-flex align-items-center">
+                                        <i class="bi bi-info-circle-fill me-2 fs-4"></i>
+                                        <span>Chưa có danh mục nào. Nhấn "Thêm danh mục" để tạo danh mục mới.</span>
                                     </div>
                                 </td>
                             </tr>
@@ -65,12 +67,14 @@
                 </table>
             </div>
         </div>
-        <div class="card-footer">
+        <div class="card-footer d-flex justify-content-between align-items-center">
             <div class="text-muted">
                 <i class="bi bi-info-circle me-1"></i>
-                Tổng số danh mục: @Model.Count()
+                Tổng số danh mục: <span class="fw-bold">@Model.Count()</span>
             </div>
+            <a asp-controller="Home" asp-action="Index" class="btn btn-sm btn-outline-secondary">
+                <i class="bi bi-house-door"></i> Trang chủ
+            </a>
         </div>
     </div>
 </div>
-
