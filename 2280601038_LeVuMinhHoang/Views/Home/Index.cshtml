@@ -25,7 +25,7 @@
                         <p class="card-text text-truncate">@product.Description</p>
                         <p class="card-text fw-bold text-danger">$@product.Price</p>
                         <div class="d-flex justify-content-between">
-                            <a asp-controller="Product" asp-action="Display" asp-route-id="@product.Id" class="btn btn-primary">Xem chi tiết</a>
+                            <a asp-area="" asp-controller="Product" asp-action="Display" asp-route-id="@product.Id" class="btn btn-primary">Xem chi tiết</a>
                             <a href="#" class="btn btn-success">Thêm vào giỏ</a>
                         </div>
                     </div>

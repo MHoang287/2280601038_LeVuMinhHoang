@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Trang quản lý sản phẩm</title>
+    <title>@(ViewData["Title"] ?? "Trang quản lý sản phẩm")</title>
     <script type="importmap"></script>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
@@ -147,20 +147,23 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link @(ViewContext.RouteData.Values["Controller"].ToString() == "Product" ? "active" : "")" asp-area="" asp-controller="Product" asp-action="Index">
+                            <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Product" ? "active" : "")" asp-area="Admin" asp-controller="Product" asp-action="Index">
                                 <i class="bi bi-box-seam me-1"></i>Sản phẩm
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link @(ViewContext.RouteData.Values["Controller"].ToString() == "Category" ? "active" : "")" asp-area="" asp-controller="Category" asp-action="Index">
+                            <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Category" ? "active" : "")" asp-area="" asp-controller="Category" asp-action="Index">
                                 <i class="bi bi-tags me-1"></i>Danh mục
                             </a>
                         </li>
                     </ul>
+
                     <form class="d-flex" role="search" asp-controller="Product" asp-action="Search" method="get">
                         <input class="form-control me-2" type="search" placeholder="Tìm kiếm sản phẩm..." aria-label="Search" name="searchTerm">
                         <button class="btn btn-outline-light" type="submit"><i class="bi bi-search"></i></button>
                     </form>
+
+                    <partial name="_LoginPartial" />
                 </div>
             </div>
         </nav>
