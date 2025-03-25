@@ -29,11 +29,21 @@ namespace _2280601038_LeVuMinhHoang.Controllers
             _logger = logger;
         }
 
+        private string GetCartSessionKey()
+        {
+            if (User.Identity.IsAuthenticated)
+            {
+                return $"Cart_{_userManager.GetUserId(User)}";
+            }
+            throw new UnauthorizedAccessException("User must be authenticated");
+        }
+
         public async Task<IActionResult> Index()
         {
             try
             {
-                var cart = HttpContext.Session.GetObjectFromJson<ShoppingCart>("Cart") ?? new ShoppingCart();
+                var cartKey = GetCartSessionKey();
+                var cart = HttpContext.Session.GetObjectFromJson<ShoppingCart>(cartKey) ?? new ShoppingCart();
                 return View(cart);
             }
             catch (Exception ex)
@@ -50,14 +60,12 @@ namespace _2280601038_LeVuMinhHoang.Controllers
         {
             try
             {
-                // Validate quantity
                 if (quantity <= 0)
                 {
                     TempData["ErrorMessage"] = "Quantity must be at least 1";
                     return RedirectToAction("Details", "Product", new { id = productId });
                 }
 
-                // Get product with images
                 var product = await _context.Products
                     .Include(p => p.Images)
                     .FirstOrDefaultAsync(p => p.Id == productId);
@@ -68,7 +76,8 @@ namespace _2280601038_LeVuMinhHoang.Controllers
                     return RedirectToAction("Index", "Product");
                 }
 
-                var cart = HttpContext.Session.GetObjectFromJson<ShoppingCart>("Cart") ?? new ShoppingCart();
+                var cartKey = GetCartSessionKey();
+                var cart = HttpContext.Session.GetObjectFromJson<ShoppingCart>(cartKey) ?? new ShoppingCart();
 
                 var existingItem = cart.Items.FirstOrDefault(i => i.ProductId == productId);
                 if (existingItem != null)
@@ -86,7 +95,7 @@ namespace _2280601038_LeVuMinhHoang.Controllers
                     });
                 }
 
-                HttpContext.Session.SetObjectAsJson("Cart", cart);
+                HttpContext.Session.SetObjectAsJson(cartKey, cart);
                 TempData["SuccessMessage"] = $"{product.Name} added to cart";
                 return RedirectToAction("Index");
             }
@@ -109,7 +118,8 @@ namespace _2280601038_LeVuMinhHoang.Controllers
                     return RemoveFromCart(productId);
                 }
 
-                var cart = HttpContext.Session.GetObjectFromJson<ShoppingCart>("Cart");
+                var cartKey = GetCartSessionKey();
+                var cart = HttpContext.Session.GetObjectFromJson<ShoppingCart>(cartKey);
                 if (cart == null)
                 {
                     TempData["ErrorMessage"] = "Your cart is empty";
@@ -124,7 +134,7 @@ namespace _2280601038_LeVuMinhHoang.Controllers
                 }
 
                 item.Quantity = quantity;
-                HttpContext.Session.SetObjectAsJson("Cart", cart);
+                HttpContext.Session.SetObjectAsJson(cartKey, cart);
                 TempData["SuccessMessage"] = "Cart updated successfully";
                 return RedirectToAction("Index");
             }
@@ -142,7 +152,8 @@ namespace _2280601038_LeVuMinhHoang.Controllers
         {
             try
             {
-                var cart = HttpContext.Session.GetObjectFromJson<ShoppingCart>("Cart");
+                var cartKey = GetCartSessionKey();
+                var cart = HttpContext.Session.GetObjectFromJson<ShoppingCart>(cartKey);
                 if (cart == null)
                 {
                     TempData["ErrorMessage"] = "Your cart is empty";
@@ -157,7 +168,7 @@ namespace _2280601038_LeVuMinhHoang.Controllers
                 }
 
                 cart.RemoveItem(productId);
-                HttpContext.Session.SetObjectAsJson("Cart", cart);
+                HttpContext.Session.SetObjectAsJson(cartKey, cart);
                 TempData["SuccessMessage"] = $"{item.Name} removed from cart";
                 return RedirectToAction("Index");
             }
@@ -175,7 +186,8 @@ namespace _2280601038_LeVuMinhHoang.Controllers
         {
             try
             {
-                HttpContext.Session.Remove("Cart");
+                var cartKey = GetCartSessionKey();
+                HttpContext.Session.Remove(cartKey);
                 TempData["SuccessMessage"] = "Cart cleared successfully";
                 return RedirectToAction("Index");
             }
@@ -192,7 +204,8 @@ namespace _2280601038_LeVuMinhHoang.Controllers
         {
             try
             {
-                var cart = HttpContext.Session.GetObjectFromJson<ShoppingCart>("Cart");
+                var cartKey = GetCartSessionKey();
+                var cart = HttpContext.Session.GetObjectFromJson<ShoppingCart>(cartKey);
                 if (cart == null || !cart.Items.Any())
                 {
                     TempData["ErrorMessage"] = "Your cart is empty";
@@ -215,20 +228,19 @@ namespace _2280601038_LeVuMinhHoang.Controllers
         {
             try
             {
-                var cart = HttpContext.Session.GetObjectFromJson<ShoppingCart>("Cart");
+                var cartKey = GetCartSessionKey();
+                var cart = HttpContext.Session.GetObjectFromJson<ShoppingCart>(cartKey);
                 if (cart == null || !cart.Items.Any())
                 {
                     ModelState.AddModelError("", "Your cart is empty");
                     return RedirectToAction("Index");
                 }
 
-                // Validate model
                 if (!ModelState.IsValid)
                 {
                     return View(order);
                 }
 
-                // Get current user
                 var user = await _userManager.GetUserAsync(User);
                 if (user == null)
                 {
@@ -236,11 +248,9 @@ namespace _2280601038_LeVuMinhHoang.Controllers
                     return RedirectToAction("Index");
                 }
 
-                // Begin transaction
                 using var transaction = await _context.Database.BeginTransactionAsync();
                 try
                 {
-                    // Create order
                     order.UserId = user.Id;
                     order.OrderDate = DateTime.UtcNow;
                     order.TotalPrice = cart.GetTotal();
@@ -255,10 +265,7 @@ namespace _2280601038_LeVuMinhHoang.Controllers
                     await _context.SaveChangesAsync();
                     await transaction.CommitAsync();
 
-                    // Clear cart
-                    HttpContext.Session.Remove("Cart");
-
-                    // Redirect to order confirmation
+                    HttpContext.Session.Remove(cartKey);
                     return RedirectToAction("OrderConfirmation", new { id = order.Id });
                 }
                 catch (Exception ex)
@@ -298,22 +305,6 @@ namespace _2280601038_LeVuMinhHoang.Controllers
                 _logger.LogError(ex, $"Error loading order confirmation {id}");
                 TempData["ErrorMessage"] = "Error loading order confirmation";
                 return RedirectToAction("Index");
-            }
-        }
-
-        private async Task<Product> GetProductFromDatabase(int productId)
-        {
-            try
-            {
-                return await _context.Products
-                    .Include(p => p.Images)
-                    .Include(p => p.Category)
-                    .FirstOrDefaultAsync(p => p.Id == productId);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Error retrieving product {productId}");
-                return null;
             }
         }
     }
