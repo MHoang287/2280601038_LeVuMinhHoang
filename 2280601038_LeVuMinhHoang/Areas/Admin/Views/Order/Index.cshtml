@@ -59,14 +59,13 @@
                                 <tr>
                                     <td><a href="@Url.Action("Details", new { id = order.Id })" class="fw-bold text-primary">#@order.Id</a></td>
                                     <td>
-                                        <div>@order.User.FullName</div>
-                                        <small class="text-muted">ID: @order.User.Id</small>
+                                        <small class="text-muted">ID: @order.UserId</small>
                                     </td>
                                     <td>
                                         <div>@order.OrderDate.ToString("dd/MM/yyyy")</div>
                                         <small class="text-muted">@order.OrderDate.ToString("HH:mm")</small>
                                     </td>
-                                    <td class="text-end fw-bold text-danger">@String.Format("{0:N0} VNĐ", order.Total)</td>
+                                    <td class="text-end fw-bold text-danger">@String.Format("{0:N0} VNĐ", order.TotalPrice)</td>
                                     <td class="text-center">
                                         <span class="badge bg-success">Đã xác nhận</span>
                                     </td>

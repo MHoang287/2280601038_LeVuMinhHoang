@@ -25,16 +25,12 @@
                         <div class="card-body">
                             <table class="table table-borderless">
                                 <tr>
-                                    <td width="30%"><strong>Khách hàng:</strong></td>
-                                    <td>@Html.DisplayFor(model => model.User.FullName)</td>
-                                </tr>
-                                <tr>
                                     <td><strong>Ngày đặt hàng:</strong></td>
                                     <td>@Model.OrderDate.ToString("dd/MM/yyyy HH:mm")</td>
                                 </tr>
                                 <tr>
                                     <td><strong>Tổng tiền:</strong></td>
-                                    <td class="text-danger fw-bold">@String.Format("{0:N0} $", Model.Total)</td>
+                                    <td class="text-danger fw-bold">@String.Format("{0:N0} $", Model.TotalPrice)</td>
                                 </tr>
                             </table>
                         </div>

@@ -19,7 +19,7 @@ namespace _2280601038_LeVuMinhHoang.Areas.Admin.Controllers
         // GET: Admin/Order
         public async Task<IActionResult> Index()
         {
-            var orders = await _context.Orders.Include(o => o.User).ToListAsync();
+            var orders = await _context.Orders.Include(o => o.UserId).ToListAsync();
             return View(orders);
         }
 
@@ -86,7 +86,7 @@ namespace _2280601038_LeVuMinhHoang.Areas.Admin.Controllers
             }
 
             var order = await _context.Orders
-                .Include(o => o.User)
+                .Include(o => o.UserId)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (order == null)
             {
@@ -105,7 +105,7 @@ namespace _2280601038_LeVuMinhHoang.Areas.Admin.Controllers
             }
 
             var order = await _context.Orders
-                .Include(o => o.User)
+                .Include(o => o.UserId)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (order == null)
             {

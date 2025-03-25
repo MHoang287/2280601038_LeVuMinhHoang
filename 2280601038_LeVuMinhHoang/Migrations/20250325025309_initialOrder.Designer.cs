@@ -12,8 +12,8 @@ using _2280601038_LeVuMinhHoang.Models;
 namespace _2280601038_LeVuMinhHoang.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250321151559_cart")]
-    partial class cart
+    [Migration("20250325025309_initialOrder")]
+    partial class initialOrder
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -259,13 +259,18 @@ namespace _2280601038_LeVuMinhHoang.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<bool>("IsCompleted")
-                        .HasColumnType("bit");
+                    b.Property<string>("Notes")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("OrderDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<decimal>("Total")
+                    b.Property<string>("ShippingAddress")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("TotalPrice")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("UserId")
@@ -416,13 +421,13 @@ namespace _2280601038_LeVuMinhHoang.Migrations
 
             modelBuilder.Entity("_2280601038_LeVuMinhHoang.Models.Order", b =>
                 {
-                    b.HasOne("_2280601038_LeVuMinhHoang.Models.ApplicationUser", "User")
+                    b.HasOne("_2280601038_LeVuMinhHoang.Models.ApplicationUser", "ApplicationUser")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("User");
+                    b.Navigation("ApplicationUser");
                 });
 
             modelBuilder.Entity("_2280601038_LeVuMinhHoang.Models.OrderDetail", b =>
