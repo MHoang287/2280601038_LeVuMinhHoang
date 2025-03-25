@@ -5,88 +5,87 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="container mt-4">
+<div class="container product-update-container">
     <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card shadow">
-                <div class="card-header bg-primary text-white">
-                    <h3 class="mb-0"><i class="bi bi-pencil-square me-2"></i>Cập nhật sản phẩm</h3>
+        <div class="col-lg-10">
+            <div class="card border-0 shadow-lg rounded-4">
+                <div class="card-header bg-gradient-primary text-white d-flex align-items-center">
+                    <i class="bi bi-pencil-square me-3 fs-4"></i>
+                    <h3 class="mb-0">Cập nhật thông tin sản phẩm</h3>
                 </div>
-                <div class="card-body">
-                    <form asp-action="Update" method="post" enctype="multipart/form-data">
+                <div class="card-body p-5">
+                    <form asp-action="Update" method="post" enctype="multipart/form-data" class="product-form">
                         <input type="hidden" asp-for="Id" />
 
                         <div class="row">
-                            <div class="col-md-8">
-                                <div class="mb-3">
-                                    <label asp-for="Name" class="form-label fw-medium">Tên sản phẩm</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text"><i class="bi bi-box"></i></span>
-                                        <input asp-for="Name" class="form-control" placeholder="Nhập tên sản phẩm" required />
+                            <div class="col-lg-8">
+                                <div class="row mb-4">
+                                    <div class="col-md-12">
+                                        <label asp-for="Name" class="form-label">Tên sản phẩm</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="bi bi-tag"></i></span>
+                                            <input asp-for="Name" class="form-control" placeholder="Nhập tên sản phẩm" required />
+                                        </div>
+                                        <span asp-validation-for="Name" class="text-danger"></span>
                                     </div>
-                                    <span asp-validation-for="Name" class="text-danger"></span>
                                 </div>
 
-                                <div class="row mb-3">
+                                <div class="row mb-4">
                                     <div class="col-md-6">
-                                        <label asp-for="Price" class="form-label fw-medium">Giá bán</label>
+                                        <label asp-for="Price" class="form-label">Giá bán</label>
                                         <div class="input-group">
-                                            <span class="input-group-text"><i class="bi bi-currency-dollar"></i></span>
-                                            <input asp-for="Price" class="form-control" type="number" step="0.01" min="0" required />
-                                            <span class="input-group-text">đ</span>
+                                            <span class="input-group-text">₫</span>
+                                            <input asp-for="Price" class="form-control" type="number" step="1000" min="0" required />
                                         </div>
                                         <span asp-validation-for="Price" class="text-danger"></span>
                                     </div>
 
                                     <div class="col-md-6">
-                                        <label asp-for="CategoryId" class="form-label fw-medium">Danh mục</label>
-                                        <div class="input-group">
-                                            <span class="input-group-text"><i class="bi bi-tag"></i></span>
-                                            <select asp-for="CategoryId" class="form-select" asp-items="ViewBag.Categories" required>
-                                                <option value="">-- Chọn danh mục --</option>
-                                            </select>
-                                        </div>
+                                        <label asp-for="CategoryId" class="form-label">Danh mục</label>
+                                        <select asp-for="CategoryId" class="form-select" asp-items="ViewBag.Categories" required>
+                                            <option value="">-- Chọn danh mục --</option>
+                                        </select>
                                         <span asp-validation-for="CategoryId" class="text-danger"></span>
                                     </div>
                                 </div>
 
-                                <div class="mb-3">
-                                    <label asp-for="Description" class="form-label fw-medium">Mô tả sản phẩm</label>
-                                    <textarea asp-for="Description" class="form-control" rows="4" placeholder="Nhập mô tả chi tiết về sản phẩm"></textarea>
-                                    <span asp-validation-for="Description" class="text-danger"></span>
+                                <div class="mb-4">
+                                    <label asp-for="Description" class="form-label">Mô tả chi tiết</label>
+                                    <textarea asp-for="Description" class="form-control" rows="5"
+                                              placeholder="Mô tả chi tiết về sản phẩm (chất liệu, kích thước, phong cách...)"></textarea>
                                 </div>
                             </div>
 
-                            <div class="col-md-4">
-                                <div class="mb-3">
-                                    <label class="form-label fw-medium">Hình ảnh sản phẩm</label>
-                                    <div class="card mb-2">
-                                        <div class="card-body text-center p-3">
-                                            @if (!string.IsNullOrEmpty(Model.ImageUrl))
-                                            {
-                                                <img src="@Model.ImageUrl" alt="@Model.Name" class="img-fluid mb-2" style="max-height: 200px; object-fit: contain;" />
-                                            }
-                                            else
-                                            {
-                                                <div class="bg-light rounded p-4 mb-2">
-                                                    <i class="bi bi-image text-muted" style="font-size: 5rem;"></i>
-                                                </div>
-                                            }
-                                            <input type="file" name="imageFile" class="form-control" accept="image/*" />
-                                            <input type="hidden" asp-for="ImageUrl" />
-                                            <div class="form-text">Chọn ảnh mới để thay đổi hình ảnh hiện tại</div>
-                                        </div>
+                            <div class="col-lg-4">
+                                <div class="image-upload-section">
+                                    <label class="form-label">Hình ảnh sản phẩm</label>
+                                    <div class="image-preview mb-3">
+                                        @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                                        {
+                                            <img src="@Model.ImageUrl" alt="@Model.Name" class="img-fluid rounded" />
+                                        }
+                                        else
+                                        {
+                                            <div class="placeholder-image">
+                                                <i class="bi bi-image fs-1 text-muted"></i>
+                                                <p class="text-muted mt-2">Chưa có hình ảnh</p>
+                                            </div>
+                                        }
+                                    </div>
+                                    <div class="custom-file">
+                                        <input type="file" name="imageFile" class="form-control" accept="image/*" />
+                                        <small class="form-text text-muted">Chọn ảnh mới để thay đổi</small>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
                         <div class="d-flex justify-content-between mt-4">
-                            <a asp-action="Index" class="btn btn-outline-secondary">
-                                <i class="bi bi-arrow-left me-1"></i> Quay lại
+                            <a asp-action="Index" class="btn btn-outline-secondary rounded-pill">
+                                <i class="bi bi-arrow-left me-2"></i>Quay lại
                             </a>
-                            <button type="submit" class="btn btn-primary">
-                                <i class="bi bi-save me-1"></i> Lưu thay đổi
+                            <button type="submit" class="btn btn-primary rounded-pill">
+                                <i class="bi bi-save me-2"></i>Lưu thay đổi
                             </button>
                         </div>
                     </form>
@@ -95,3 +94,44 @@
         </div>
     </div>
 </div>
+
+<style>
+    .product-update-container {
+        background-color: #f8f9fa;
+    }
+
+    .bg-gradient-primary {
+        background: linear-gradient(to right, #1a1a2e, #16213e);
+    }
+
+    .image-preview {
+        height: 250px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border: 2px dashed #e0e0e0;
+        border-radius: 12px;
+        overflow: hidden;
+    }
+
+        .image-preview img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: cover;
+        }
+
+    .placeholder-image {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        height: 100%;
+        background-color: #f8f9fa;
+    }
+
+    .product-form .form-label {
+        font-weight: 600;
+        color: #2c3e50;
+    }
+</style>

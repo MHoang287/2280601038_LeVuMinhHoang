@@ -1,92 +1,165 @@
-﻿@model IEnumerable<_2280601038_LeVuMinhHoang.Models.Product>
+﻿@model IEnumerable<Product>
+
 @{
-    ViewData["Title"] = "Products";
+    ViewData["Title"] = "Bộ sưu tập thời trang";
+
+    @section Styles {
+        <style>
+            /* Giữ nguyên phần CSS như cũ */
+            .product-card {
+                transition: transform 0.3s ease, box-shadow 0.3s ease;
+                border: none;
+                border-radius: 10px;
+                overflow: hidden;
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+                margin-bottom: 20px;
+            }
+
+                .product-card:hover {
+                    transform: translateY(-5px);
+                    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+                }
+
+            .product-card-img-container {
+                height: 250px;
+                overflow: hidden;
+            }
+
+            .product-card-img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                transition: transform 0.5s ease;
+            }
+
+            .product-card:hover .product-card-img {
+                transform: scale(1.05);
+            }
+
+            .price-tag {
+                color: #e74c3c;
+                font-weight: bold;
+                font-size: 1.2rem;
+            }
+        </style>
+    }
 }
 
-<div class="container mt-4">
-    <div class="card shadow-sm">
-        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-            <h2 class="mb-0">Products</h2>
-            <a asp-action="Add" class="btn btn-light">
-                <i class="bi bi-plus-circle"></i> Thêm sản phẩm
-            </a>
-        </div>
-        <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-hover table-striped">
-                    <thead class="table-light">
-                        <tr>
-                            <th>Image</th>
-                            <th>Name</th>
-                            <th>Price</th>
-                            <th>Category</th>
-                            <th>Description</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @if (Model.Any())
-                        {
-                            @foreach (var product in Model)
-                            {
-                                <tr>
-                                    <td class="text-center" style="width: 80px;">
-                                        @if (!string.IsNullOrEmpty(product.ImageUrl))
-                                        {
-                                            <img src="@product.ImageUrl" alt="@product.Name" class="img-thumbnail" style="width: 50px; height: 50px; object-fit: cover;" />
-                                        }
-                                        else
-                                        {
-                                            <div class="bg-light rounded p-2 text-center">
-                                                <i class="bi bi-image text-muted"></i>
-                                            </div>
-                                        }
-                                    </td>
-                                    <td>@product.Name</td>
-                                    <td>$@product.Price</td>
-                                    <td>
-                                        <span class="badge bg-primary">@product.Category?.Name</span>
-                                    </td>
-                                    <td>
-                                        @if (!string.IsNullOrEmpty(product.Description) && product.Description.Length > 50)
-                                        {
-                                            @(product.Description.Substring(0, 50) + "...")
-                                        }
-                                        else
-                                        {
-                                            @product.Description
-                                        }
-                                    </td>
-                                    <td>
-                                        <div class="btn-group">
-                                            <a asp-action="Display" asp-route-id="@product.Id" class="btn btn-sm btn-info">
-                                                <i class="bi bi-eye"></i>
-                                            </a>
-                                            <a asp-action="Update" asp-route-id="@product.Id" class="btn btn-sm btn-primary">
-                                                <i class="bi bi-pencil"></i>
-                                            </a>
-                                            <a asp-action="Delete" asp-route-id="@product.Id" class="btn btn-sm btn-danger">
-                                                <i class="bi bi-trash"></i>
-                                            </a>
-                                        </div>
-                                    </td>
-                                </tr>
-                            }
-                        }
-                        else
-                        {
-                            <tr>
-                                <td colspan="6" class="text-center p-4">
-                                    <div class="alert alert-info mb-0">
-                                        <i class="bi bi-info-circle-fill me-2"></i>
-                                        No products found. Click "Thêm sản phẩm" to add a new product.
-                                    </div>
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
+@if (!string.IsNullOrEmpty(ViewBag.SearchTerm))
+{
+    <div class="alert alert-info alert-dismissible fade show mt-3">
+        <h5><i class="bi bi-search me-2"></i>Kết quả tìm kiếm: "@ViewBag.SearchTerm"</h5>
+        <p class="mb-0">Tìm thấy @Model.Count() sản phẩm phù hợp</p>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+@if (TempData["SearchMessage"] != null)
+{
+    <div class="alert alert-warning alert-dismissible fade show mt-3">
+        @TempData["SearchMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<div class="text-center my-5">
+    <h1 class="display-5 fw-bold mb-3">Bộ sưu tập thời trang mới nhất</h1>
+    <p class="lead text-muted">Khám phá những xu hướng mới nhất và phong cách độc đáo</p>
+</div>
+
+<div class="row g-4">
+    @foreach (var product in Model)
+    {
+        <div class="col-md-4 col-lg-3">
+            <div class="card product-card h-100">
+                <div class="product-card-img-container">
+                    <img src="@(!string.IsNullOrEmpty(product.ImageUrl) ? product.ImageUrl : "/images/no-image.jpg")"
+                         class="product-card-img"
+                         alt="@product.Name">
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">@product.Name</h5>
+                    <p class="card-text text-muted">@product.Category?.Name</p>
+                    <p class="price-tag">@product.Price.ToString("N0") ₫</p>
+                </div>
+                <div class="card-footer bg-transparent">
+                    <div class="d-flex justify-content-between">
+                        <a asp-controller="Product" asp-action="Display" asp-route-id="@product.Id"
+                           class="btn btn-outline-primary btn-sm">
+                            <i class="bi bi-eye"></i> Xem
+                        </a>
+                        <form class="add-to-cart-form" asp-controller="ShoppingCart" asp-action="AddToCart" method="post">
+                            <input type="hidden" name="productId" value="@product.Id" />
+                            <button type="submit" class="btn btn-primary btn-sm">
+                                <i class="bi bi-cart-plus me-1"></i> Thêm
+                            </button>
+                        </form>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
+    }
 </div>
+
+@section Scripts {
+    <!-- Thêm thư viện SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        $(document).ready(function() {
+            $('.add-to-cart-form').submit(function(e) {
+                e.preventDefault();
+                var form = $(this);
+                var submitButton = form.find('button[type="submit"]');
+
+                // Vô hiệu hóa nút để tránh nhiều lần click
+                submitButton.prop('disabled', true);
+
+                $.ajax({
+                    url: form.attr('action'),
+                    method: form.attr('method'),
+                    data: form.serialize(),
+                    dataType: 'json', // Đảm bảo nhận response là JSON
+                    success: function(response) {
+                        // Kiểm tra cấu trúc response
+                        if (response && response.success) {
+                            // Cập nhật số lượng giỏ hàng (nếu có)
+                            if (response.cartCount !== undefined) {
+                                $('#cart-count').text(response.cartCount);
+                            }
+
+                            // Hiển thị thông báo thành công
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Thành công!',
+                                text: response.message || 'Sản phẩm đã được thêm vào giỏ hàng',
+                                timer: 1500,
+                                showConfirmButton: false
+                            });
+                        } else {
+                            // Hiển thị thông báo lỗi từ server
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Lỗi',
+                                text: response?.message || 'Không thể thêm vào giỏ hàng'
+                            });
+                        }
+                    },
+                    error: function(xhr) {
+                        // Hiển thị thông báo lỗi AJAX
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Lỗi kết nối',
+                            text: 'Đã xảy ra lỗi khi kết nối đến server. Vui lòng thử lại.'
+                        });
+                        console.error(xhr.responseText);
+                    },
+                    complete: function() {
+                        // Kích hoạt lại nút sau khi hoàn thành
+                        submitButton.prop('disabled', false);
+                    }
+                });
+            });
+        });
+    </script>
+}

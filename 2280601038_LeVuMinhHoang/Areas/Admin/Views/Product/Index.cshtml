@@ -4,108 +4,118 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="container mt-4">
-    <div class="card shadow">
-        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-            <h2 class="mb-0"><i class="bi bi-box me-2"></i>Quản lý sản phẩm</h2>
-            <div>
-                <a asp-action="Add" class="btn btn-light">
-                    <i class="bi bi-plus-circle me-1"></i> Thêm sản phẩm
+<div class="container-fluid px-4 product-management">
+    <div class="card border-0 shadow-lg rounded-4">
+        <div class="card-header bg-gradient-primary text-white d-flex justify-content-between align-items-center">
+            <h2 class="mb-0">
+                <i class="bi bi-bag-heart me-3"></i>Quản lý bộ sưu tập
+            </h2>
+            <div class="action-buttons">
+                <a asp-action="Add" class="btn btn-outline-light me-2 rounded-pill">
+                    <i class="bi bi-plus-circle me-2"></i>Thêm sản phẩm mới
                 </a>
-                <a asp-controller="Category" asp-action="Index" class="btn btn-outline-light ms-2">
-                    <i class="bi bi-tags me-1"></i> Quản lý danh mục
+                <a asp-controller="Category" asp-action="Index" class="btn btn-outline-light rounded-pill">
+                    <i class="bi bi-collection me-2"></i>Quản lý danh mục
                 </a>
             </div>
         </div>
 
         <div class="card-body">
-            <div class="mb-3">
-                <div class="input-group">
-                    <span class="input-group-text"><i class="bi bi-search"></i></span>
-                    <input type="text" id="productSearch" class="form-control" placeholder="Tìm kiếm sản phẩm..." />
-                    <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                        <i class="bi bi-funnel"></i> Lọc
-                    </button>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                        <li><a class="dropdown-item" href="#">Tất cả sản phẩm</a></li>
-                        <li><a class="dropdown-item" href="#">Giá cao đến thấp</a></li>
-                        <li><a class="dropdown-item" href="#">Giá thấp đến cao</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="#">Mới nhất</a></li>
-                    </ul>
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="search-wrapper">
+                        <input type="text" id="productSearch" class="form-control search-input"
+                               placeholder="🔍 Tìm kiếm theo tên, mã sản phẩm..." />
+                    </div>
+                </div>
+                <div class="col-md-6 text-end">
+                    <div class="dropdown">
+                        <button class="btn btn-soft-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-funnel me-2"></i>Lọc & Sắp xếp
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                                <a class="dropdown-item" href="#">
+                                    <i class="bi bi-sort-up me-2"></i>Giá cao đến thấp
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="#">
+                                    <i class="bi bi-sort-down me-2"></i>Giá thấp đến cao
+                                </a>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a class="dropdown-item" href="#">
+                                    <i class="bi bi-clock me-2"></i>Mới nhất
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
             </div>
 
             <div class="table-responsive">
-                <table class="table table-hover table-striped">
-                    <thead class="table-light">
+                <table class="table table-borderless table-hover product-table">
+                    <thead>
                         <tr>
-                            <th scope="col" class="fw-bold">Hình ảnh</th>
-                            <th scope="col" class="fw-bold">Tên sản phẩm</th>
-                            <th scope="col" class="fw-bold">Giá</th>
-                            <th scope="col" class="fw-bold">Danh mục</th>
-                            <th scope="col" class="fw-bold">Mô tả</th>
-                            <th scope="col" class="fw-bold">Thao tác</th>
+                            <th class="text-center">Hình ảnh</th>
+                            <th>Tên sản phẩm</th>
+                            <th>Giá</th>
+                            <th>Danh mục</th>
+                            <th>Mô tả</th>
+                            <th class="text-center">Thao tác</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @if (Model.Any())
+                        @foreach (var product in Model)
                         {
-                            @foreach (var product in Model)
-                            {
-                                <tr>
-                                    <td class="text-center" style="width: 100px;">
+                            <tr class="product-row">
+                                <td class="text-center">
+                                    <div class="product-thumbnail">
                                         @if (!string.IsNullOrEmpty(product.ImageUrl))
                                         {
-                                            <img src="@product.ImageUrl" alt="@product.Name" class="img-thumbnail" style="width: 70px; height: 70px; object-fit: cover;" />
+                                            <img src="@product.ImageUrl" alt="@product.Name"
+                                                 class="img-fluid rounded-circle" />
                                         }
                                         else
                                         {
-                                            <div class="bg-light rounded p-3 text-center">
-                                                <i class="bi bi-image text-muted fs-4"></i>
+                                            <div class="placeholder-image">
+                                                <i class="bi bi-image"></i>
                                             </div>
                                         }
-                                    </td>
-                                    <td class="align-middle fw-medium">@product.Name</td>
-                                    <td class="align-middle">
-                                        <span class="badge bg-success fs-6">@product.Price.ToString("N0") đ</span>
-                                    </td>
-                                    <td class="align-middle">
-                                        <span class="badge bg-primary">@product.Category?.Name</span>
-                                    </td>
-                                    <td class="align-middle">
-                                        @if (!string.IsNullOrEmpty(product.Description) && product.Description.Length > 50)
-                                        {
-                                            <span title="@product.Description">@(product.Description.Substring(0, 50) + "...")</span>
-                                        }
-                                        else
-                                        {
-                                            @product.Description
-                                        }
-                                    </td>
-                                    <td class="align-middle">
-                                        <div class="btn-group">
-                                            <a asp-action="Display" asp-route-id="@product.Id" class="btn btn-sm btn-outline-info">
-                                                <i class="bi bi-eye"></i>
-                                            </a>
-                                            <a asp-action="Update" asp-route-id="@product.Id" class="btn btn-sm btn-outline-primary">
-                                                <i class="bi bi-pencil"></i>
-                                            </a>
-                                            <a asp-action="Delete" asp-route-id="@product.Id" class="btn btn-sm btn-outline-danger">
-                                                <i class="bi bi-trash"></i>
-                                            </a>
-                                        </div>
-                                    </td>
-                                </tr>
-                            }
-                        }
-                        else
-                        {
-                            <tr>
-                                <td colspan="6" class="text-center p-4">
-                                    <div class="alert alert-info mb-0 d-flex align-items-center">
-                                        <i class="bi bi-info-circle-fill me-2 fs-4"></i>
-                                        <span>Chưa có sản phẩm nào. Nhấn "Thêm sản phẩm" để bắt đầu.</span>
+                                    </div>
+                                </td>
+                                <td class="fw-bold">@product.Name</td>
+                                <td>
+                                    <span class="badge bg-soft-success">
+                                        @product.Price.ToString("N0") đ
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-soft-primary">
+                                        @product.Category?.Name
+                                    </span>
+                                </td>
+                                <td class="text-muted">
+                                    @(product.Description?.Length > 50
+                                        ? product.Description.Substring(0, 50) + "..."
+                                        : product.Description)
+                                </td>
+                                <td class="text-center">
+                                    <div class="btn-group" role="group">
+                                        <a asp-action="Display" asp-route-id="@product.Id"
+                                           class="btn btn-sm btn-outline-info rounded-circle">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        <a asp-action="Update" asp-route-id="@product.Id"
+                                           class="btn btn-sm btn-outline-primary rounded-circle">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <a asp-action="Delete" asp-route-id="@product.Id"
+                                           class="btn btn-sm btn-outline-danger rounded-circle">
+                                            <i class="bi bi-trash"></i>
+                                        </a>
                                     </div>
                                 </td>
                             </tr>
@@ -114,25 +124,60 @@
                 </table>
             </div>
         </div>
-
-        <div class="card-footer d-flex justify-content-between align-items-center">
-            <div class="text-muted">
-                <i class="bi bi-info-circle me-1"></i>
-                Tổng số sản phẩm: <span class="fw-bold">@Model.Count()</span>
-            </div>
-            <nav aria-label="Page navigation">
-                <ul class="pagination pagination-sm mb-0">
-                    <li class="page-item disabled">
-                        <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Trước</a>
-                    </li>
-                    <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                    <li class="page-item"><a class="page-link" href="#">2</a></li>
-                    <li class="page-item"><a class="page-link" href="#">3</a></li>
-                    <li class="page-item">
-                        <a class="page-link" href="#">Sau</a>
-                    </li>
-                </ul>
-            </nav>
-        </div>
     </div>
 </div>
+
+<style>
+    .product-management {
+        background-color: #f8f9fa;
+    }
+
+    .bg-gradient-primary {
+        background: linear-gradient(to right, #1a1a2e, #16213e);
+    }
+
+    .btn-soft-secondary {
+        background-color: rgba(0,0,0,0.05);
+        border: 1px solid rgba(0,0,0,0.1);
+    }
+
+    .btn-soft-success {
+        background-color: rgba(46, 204, 113, 0.1);
+        color: #2ecc71;
+    }
+
+    .btn-soft-primary {
+        background-color: rgba(52, 152, 219, 0.1);
+        color: #3498db;
+    }
+
+    .product-thumbnail {
+        width: 80px;
+        height: 80px;
+        overflow: hidden;
+        border-radius: 50%;
+        margin: 0 auto;
+    }
+
+        .product-thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+    .placeholder-image {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 80px;
+        height: 80px;
+        background-color: #e9ecef;
+        border-radius: 50%;
+        color: #6c757d;
+    }
+
+    .product-row:hover {
+        background-color: rgba(0,0,0,0.03);
+        transition: background-color 0.3s ease;
+    }
+</style>

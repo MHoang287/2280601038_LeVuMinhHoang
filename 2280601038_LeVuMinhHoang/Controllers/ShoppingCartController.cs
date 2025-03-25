@@ -55,30 +55,38 @@ namespace _2280601038_LeVuMinhHoang.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddToCart(int productId, int quantity = 1)
         {
             try
             {
+                // Kiểm tra số lượng hợp lệ
                 if (quantity <= 0)
                 {
-                    TempData["ErrorMessage"] = "Quantity must be at least 1";
-                    return RedirectToAction("Details", "Product", new { id = productId });
+                    return Json(new
+                    {
+                        success = false,
+                        message = "Số lượng phải lớn hơn 0"
+                    });
                 }
 
+                // Lấy thông tin sản phẩm
                 var product = await _context.Products
-                    .Include(p => p.Images)
                     .FirstOrDefaultAsync(p => p.Id == productId);
 
                 if (product == null)
                 {
-                    TempData["ErrorMessage"] = "Product not found";
-                    return RedirectToAction("Index", "Product");
+                    return Json(new
+                    {
+                        success = false,
+                        message = "Không tìm thấy sản phẩm"
+                    });
                 }
 
+                // Xử lý giỏ hàng
                 var cartKey = GetCartSessionKey();
                 var cart = HttpContext.Session.GetObjectFromJson<ShoppingCart>(cartKey) ?? new ShoppingCart();
 
+                // Kiểm tra sản phẩm đã có trong giỏ hàng chưa
                 var existingItem = cart.Items.FirstOrDefault(i => i.ProductId == productId);
                 if (existingItem != null)
                 {
@@ -95,15 +103,25 @@ namespace _2280601038_LeVuMinhHoang.Controllers
                     });
                 }
 
+                // Lưu giỏ hàng vào session
                 HttpContext.Session.SetObjectAsJson(cartKey, cart);
-                TempData["SuccessMessage"] = $"{product.Name} added to cart";
-                return RedirectToAction("Index");
+
+                // Trả về kết quả JSON
+                return Json(new
+                {
+                    success = true,
+                    cartCount = cart.Items.Sum(i => i.Quantity),
+                    message = $"Đã thêm {product.Name} vào giỏ hàng"
+                });
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Error adding product {productId} to cart");
-                TempData["ErrorMessage"] = "Error adding product to cart";
-                return RedirectToAction("Details", "Product", new { id = productId });
+                _logger.LogError(ex, $"Lỗi khi thêm sản phẩm {productId} vào giỏ hàng");
+                return Json(new
+                {
+                    success = false,
+                    message = "Đã xảy ra lỗi khi thêm vào giỏ hàng"
+                });
             }
         }
 

@@ -3,54 +3,78 @@
     ViewData["Title"] = Model.Name;
 }
 
-<div class="container mt-4">
-    <div class="card shadow-sm">
-        <div class="card-header bg-primary text-white">
-            <h2 class="mb-0">Product Details</h2>
+<div class="container product-detail mt-4">
+    <div class="card product-detail-card border-0 shadow-lg rounded-4">
+        <div class="card-header bg-fashion text-white rounded-top-4 d-flex align-items-center">
+            <i class="bi bi-bag-fill me-3"></i>
+            <h2 class="mb-0 display-heading">Chi tiết sản phẩm</h2>
         </div>
         <div class="card-body">
             <div class="row">
-                <div class="col-md-4 text-center">
+                <div class="col-md-5 text-center">
                     @if (!string.IsNullOrEmpty(Model.ImageUrl))
                     {
-                        <img src="@Model.ImageUrl" alt="@Model.Name" class="img-fluid rounded mb-3" style="max-height: 300px;" />
+                        <div class="product-image-container mb-4">
+                            <img src="@Model.ImageUrl" alt="@Model.Name" class="img-fluid product-detail-image rounded-3" style="max-height: 400px; object-fit: cover;" />
+                        </div>
                     }
                     else
                     {
-                        <div class="p-5 bg-light rounded text-center mb-3">
+                        <div class="p-5 bg-light rounded text-center mb-4">
                             <i class="bi bi-image fs-1 text-muted"></i>
-                            <p class="text-muted">No image available</p>
+                            <p class="text-muted">Không có hình ảnh</p>
                         </div>
                     }
 
-                    <div class="d-grid gap-2">
-                        <a href="#" class="btn btn-success">
-                            <i class="bi bi-cart-plus"></i> Add to Cart
-                        </a>
+                    <div class="product-size-selection mb-4">
+                        <h5 class="mb-3">Chọn kích thước</h5>
+                        <div class="btn-group w-100" role="group">
+                            <input type="radio" class="btn-check" name="size" id="small" autocomplete="off">
+                            <label class="btn btn-outline-primary w-100" for="small">S</label>
+
+                            <input type="radio" class="btn-check" name="size" id="medium" autocomplete="off">
+                            <label class="btn btn-outline-primary w-100" for="medium">M</label>
+
+                            <input type="radio" class="btn-check" name="size" id="large" autocomplete="off">
+                            <label class="btn btn-outline-primary w-100" for="large">L</label>
+
+                            <input type="radio" class="btn-check" name="size" id="xlarge" autocomplete="off">
+                            <label class="btn btn-outline-primary w-100" for="xlarge">XL</label>
+                        </div>
                     </div>
+
+                    <form asp-controller="ShoppingCart" asp-action="AddToCart" method="post" class="mb-3">
+                        <input type="hidden" name="productId" value="@Model.Id" />
+                        <input type="hidden" name="quantity" value="1" />
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="bi bi-bag-plus me-2"></i>Thêm vào giỏ
+                        </button>
+                    </form>
                 </div>
 
-                <div class="col-md-8">
-                    <h1 class="display-6 fw-bold">@Model.Name</h1>
+                <div class="col-md-7">
+                    <h1 class="display-6 fw-bold text-fashion-primary mb-3">@Model.Name</h1>
 
                     <div class="d-flex align-items-center mb-3">
-                        <span class="badge bg-primary me-2">@Model.Category?.Name</span>
-                        <div class="text-warning">
+                        <span class="badge bg-fashion-secondary me-3">@Model.Category?.Name</span>
+                        <div class="text-warning product-rating">
                             <i class="bi bi-star-fill"></i>
                             <i class="bi bi-star-fill"></i>
                             <i class="bi bi-star-fill"></i>
                             <i class="bi bi-star-fill"></i>
                             <i class="bi bi-star-half"></i>
+                            <span class="ms-2 text-muted">(4.5/5)</span>
                         </div>
                     </div>
 
-                    <h3 class="text-primary fw-bold mb-3">
-                        <i class="bi bi-tag-fill"></i> $@Model.Price
+                    <h3 class="text-fashion-accent fw-bold mb-4">
+                        <i class="bi bi-tag-fill me-2"></i> $@Model.Price.ToString("N0")
                     </h3>
 
-                    <div class="card mb-3">
-                        <div class="card-header">
-                            <h5 class="mb-0"><i class="bi bi-info-circle"></i> Description</h5>
+                    <div class="card mb-4 border-light shadow-sm">
+                        <div class="card-header bg-light d-flex align-items-center">
+                            <i class="bi bi-info-circle me-2"></i>
+                            <h5 class="mb-0">Mô tả chi tiết</h5>
                         </div>
                         <div class="card-body">
                             @if (!string.IsNullOrEmpty(Model.Description))
@@ -59,20 +83,14 @@
                             }
                             else
                             {
-                                <p class="text-muted mb-0">No description available.</p>
+                                <p class="text-muted mb-0">Không có mô tả chi tiết.</p>
                             }
                         </div>
                     </div>
 
                     <div class="d-flex gap-2 mt-4">
-                        <a asp-action="Index" class="btn btn-secondary">
-                            <i class="bi bi-arrow-left"></i> Back to List
-                        </a>
-                        <a asp-action="Update" asp-route-id="@Model.Id" class="btn btn-primary">
-                            <i class="bi bi-pencil"></i> Edit
-                        </a>
-                        <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger">
-                            <i class="bi bi-trash"></i> Delete
+                        <a asp-action="Index" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left me-2"></i> Trở về
                         </a>
                     </div>
                 </div>
@@ -80,3 +98,30 @@
         </div>
     </div>
 </div>
+
+<style>
+    .product-detail-card {
+        background-color: white;
+        border-radius: 12px;
+        transition: all 0.3s ease;
+    }
+
+        .product-detail-card:hover {
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
+        }
+
+    .product-image-container {
+        overflow: hidden;
+        border-radius: 12px;
+        transition: transform 0.3s ease;
+    }
+
+        .product-image-container:hover .product-detail-image {
+            transform: scale(1.05);
+        }
+
+    .btn-group .btn-check:checked + .btn-outline-primary {
+        background-color: var(--primary-color);
+        color: white;
+    }
+</style>

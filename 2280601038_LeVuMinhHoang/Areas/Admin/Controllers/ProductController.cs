@@ -7,13 +7,15 @@ using Microsoft.AspNetCore.Authorization;
 namespace _2280601038_LeVuMinhHoang.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    [Authorize(Roles = SD.Role_Admin)]
+    [Authorize(Roles = "Admin")]
     public class ProductController : Controller
     {
         private readonly IProductRepository _productRepository;
         private readonly ICategoryRepository _categoryRepository;
 
-        public ProductController(IProductRepository productRepository, ICategoryRepository categoryRepository)
+        public ProductController(
+            IProductRepository productRepository,
+            ICategoryRepository categoryRepository)
         {
             _productRepository = productRepository;
             _categoryRepository = categoryRepository;
@@ -25,7 +27,7 @@ namespace _2280601038_LeVuMinhHoang.Areas.Admin.Controllers
             return View(products);
         }
 
-        public async Task<IActionResult> Add()
+        public async Task<IActionResult> Create()
         {
             var categories = await _categoryRepository.GetAllAsync();
             ViewBag.Categories = new SelectList(categories, "Id", "Name");
@@ -33,7 +35,8 @@ namespace _2280601038_LeVuMinhHoang.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Add(Product product)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(Product product)
         {
             if (ModelState.IsValid)
             {
@@ -45,7 +48,7 @@ namespace _2280601038_LeVuMinhHoang.Areas.Admin.Controllers
             return View(product);
         }
 
-        public async Task<IActionResult> Update(int id)
+        public async Task<IActionResult> Edit(int id)
         {
             var product = await _productRepository.GetByIdAsync(id);
             if (product == null)
@@ -58,12 +61,14 @@ namespace _2280601038_LeVuMinhHoang.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Update(int id, Product product)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, Product product)
         {
             if (id != product.Id)
             {
                 return NotFound();
             }
+
             if (ModelState.IsValid)
             {
                 await _productRepository.UpdateAsync(product);
@@ -83,36 +88,17 @@ namespace _2280601038_LeVuMinhHoang.Areas.Admin.Controllers
         }
 
         [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             await _productRepository.DeleteAsync(id);
             return RedirectToAction(nameof(Index));
         }
 
-        public async Task<IActionResult> Display(int id)
-        {
-            var product = await _productRepository.GetByIdAsync(id);
-            if (product == null)
-            {
-                return NotFound();
-            }
-            return View(product);
-        }
-
         public async Task<IActionResult> Search(string searchTerm)
         {
-            if (string.IsNullOrWhiteSpace(searchTerm))
-            {
-                return RedirectToAction(nameof(Index));
-            }
-
-            var products = await _productRepository.GetAllAsync();
-            var filteredProducts = products
-                .Where(p => p.Name.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
-                            p.Description.Contains(searchTerm, StringComparison.OrdinalIgnoreCase))
-                .ToList();
-
-            return View("Index", filteredProducts);
+            var products = await _productRepository.SearchAsync(searchTerm);
+            return View("Index", products);
         }
     }
 }

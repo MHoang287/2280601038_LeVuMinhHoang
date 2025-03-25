@@ -5,33 +5,58 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="container mt-4">
-    <div class="card shadow">
-        <div class="card-header bg-primary text-white">
+<div class="container-fluid px-4 mt-4">
+    <div class="card shadow-lg border-0 rounded-lg">
+        <div class="card-header bg-dark text-white">
             <h3 class="mb-0"><i class="bi bi-pencil me-2"></i>Chỉnh sửa đơn hàng #@Model.Id</h3>
         </div>
         <div class="card-body">
-            <form asp-action="Edit">
-                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <form asp-action="Edit" class="needs-validation" novalidate>
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
                 <input type="hidden" asp-for="Id" />
-                <div class="form-group">
-                    <label asp-for="OrderDate" class="control-label"></label>
-                    <input asp-for="OrderDate" class="form-control" />
-                    <span asp-validation-for="OrderDate" class="text-danger"></span>
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="OrderDate" class="form-label">Ngày đặt hàng</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-calendar-date"></i></span>
+                                <input asp-for="OrderDate" class="form-control" type="datetime-local" required />
+                                <div class="invalid-feedback">Vui lòng chọn ngày đặt hàng</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="TotalPrice" class="form-label">Tổng tiền</label>
+                            <div class="input-group">
+                                <span class="input-group-text">VNĐ</span>
+                                <input asp-for="TotalPrice" class="form-control" type="number" min="0" required />
+                                <div class="invalid-feedback">Vui lòng nhập tổng tiền hợp lệ</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label asp-for="UserId" class="form-label">ID Khách hàng</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-person"></i></span>
+                                <input asp-for="UserId" class="form-control" required />
+                                <div class="invalid-feedback">Vui lòng nhập ID khách hàng</div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label asp-for="TotalPrice" class="control-label"></label>
-                    <input asp-for="TotalPrice" class="form-control" />
-                    <span asp-validation-for="TotalPrice" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <label asp-for="UserId" class="control-label"></label>
-                    <input asp-for="UserId" class="form-control" />
-                    <span asp-validation-for="UserId" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <input type="submit" value="Lưu" class="btn btn-primary" />
-                    <a asp-action="Index" class="btn btn-secondary">Quay lại</a>
+
+                <div class="d-flex justify-content-between mt-4">
+                    <a asp-action="Index" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-left me-1"></i> Quay lại
+                    </a>
+                    <div>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-save me-1"></i> Lưu thay đổi
+                        </button>
+                    </div>
                 </div>
             </form>
         </div>
@@ -42,4 +67,22 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+    <script>
+        // Kích hoạt form validation
+        (function() {
+            'use strict';
+            window.addEventListener('load', function() {
+                var forms = document.getElementsByClassName('needs-validation');
+                var validation = Array.prototype.filter.call(forms, function(form) {
+                    form.addEventListener('submit', function(event) {
+                        if (form.checkValidity() === false) {
+                            event.preventDefault();
+                            event.stopPropagation();
+                        }
+                        form.classList.add('was-validated');
+                    }, false);
+                });
+            }, false);
+        })();
+    </script>
 }

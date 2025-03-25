@@ -5,48 +5,48 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="container mt-4">
-    <div class="card shadow">
-        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-            <h2 class="mb-0"><i class="bi bi-bag-check me-2"></i>Quản lý đơn hàng</h2>
+<div class="container-fluid px-4 mt-4">
+    <div class="card shadow-lg border-0 rounded-lg">
+        <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+            <h2 class="mb-0"><i class="bi bi-bag-heart me-2"></i>Quản lý đơn hàng</h2>
             <div>
-                <a href="#" class="btn btn-light btn-sm">
+                <a href="#" class="btn btn-outline-light btn-sm">
                     <i class="bi bi-file-earmark-excel me-1"></i> Xuất Excel
                 </a>
-                <a href="#" class="btn btn-light btn-sm ms-2">
+                <a href="#" class="btn btn-outline-light btn-sm ms-2">
                     <i class="bi bi-printer me-1"></i> In danh sách
                 </a>
             </div>
         </div>
 
         <div class="card-body">
-            <div class="row mb-3">
+            <div class="row mb-3 g-2">
                 <div class="col-md-8">
                     <div class="input-group">
-                        <input type="text" class="form-control" placeholder="Tìm kiếm đơn hàng..." id="searchOrder">
-                        <button class="btn btn-outline-secondary" type="button">
-                            <i class="bi bi-search"></i>
-                        </button>
+                        <span class="input-group-text"><i class="bi bi-search"></i></span>
+                        <input type="text" class="form-control" placeholder="Tìm kiếm theo mã đơn, tên khách hàng..." id="searchOrder">
                     </div>
                 </div>
                 <div class="col-md-4">
-                    <select class="form-select" id="orderFilter">
-                        <option value="">Tất cả đơn hàng</option>
+                    <select class="form-select">
+                        <option value="">Lọc đơn hàng</option>
                         <option value="today">Hôm nay</option>
                         <option value="week">Tuần này</option>
                         <option value="month">Tháng này</option>
+                        <option value="pending">Chờ xử lý</option>
+                        <option value="completed">Đã hoàn thành</option>
                     </select>
                 </div>
             </div>
 
             <div class="table-responsive">
-                <table class="table table-hover table-striped align-middle">
-                    <thead class="table-light">
+                <table class="table table-hover table-bordered align-middle">
+                    <thead class="table-dark">
                         <tr>
-                            <th>Mã ĐH</th>
+                            <th class="text-center">Mã ĐH</th>
                             <th>Khách hàng</th>
                             <th>Ngày đặt</th>
-                            <th class="text-center">Tổng tiền</th>
+                            <th class="text-end">Tổng tiền</th>
                             <th class="text-center">Trạng thái</th>
                             <th class="text-center">Thao tác</th>
                         </tr>
@@ -57,12 +57,17 @@
                             @foreach (var order in Model)
                             {
                                 <tr>
-                                    <td><a href="@Url.Action("Details", new { id = order.Id })" class="fw-bold text-primary">#@order.Id</a></td>
+                                    <td class="text-center"><a href="@Url.Action("Details", new { id = order.Id })" class="fw-bold text-primary">#@order.Id</a></td>
                                     <td>
-                                        <small class="text-muted">ID: @order.UserId</small>
+                                        <div class="d-flex align-items-center">
+                                            <div class="ms-2">
+                                                <div class="fw-bold">Khách hàng</div>
+                                                <small class="text-muted">ID: @order.UserId</small>
+                                            </div>
+                                        </div>
                                     </td>
                                     <td>
-                                        <div>@order.OrderDate.ToString("dd/MM/yyyy")</div>
+                                        <div class="text-dark">@order.OrderDate.ToString("dd/MM/yyyy")</div>
                                         <small class="text-muted">@order.OrderDate.ToString("HH:mm")</small>
                                     </td>
                                     <td class="text-end fw-bold text-danger">@String.Format("{0:N0} VNĐ", order.TotalPrice)</td>
@@ -71,13 +76,13 @@
                                     </td>
                                     <td>
                                         <div class="d-flex justify-content-center gap-1">
-                                            <a asp-action="Details" asp-route-id="@order.Id" class="btn btn-sm btn-info text-white" data-bs-toggle="tooltip" title="Xem chi tiết">
+                                            <a asp-action="Details" asp-route-id="@order.Id" class="btn btn-sm btn-outline-info" data-bs-toggle="tooltip" title="Xem chi tiết">
                                                 <i class="bi bi-eye"></i>
                                             </a>
-                                            <a asp-action="Edit" asp-route-id="@order.Id" class="btn btn-sm btn-primary" data-bs-toggle="tooltip" title="Chỉnh sửa">
+                                            <a asp-action="Edit" asp-route-id="@order.Id" class="btn btn-sm btn-outline-primary" data-bs-toggle="tooltip" title="Chỉnh sửa">
                                                 <i class="bi bi-pencil"></i>
                                             </a>
-                                            <a asp-action="Delete" asp-route-id="@order.Id" class="btn btn-sm btn-danger" data-bs-toggle="tooltip" title="Hủy đơn hàng">
+                                            <a asp-action="Delete" asp-route-id="@order.Id" class="btn btn-sm btn-outline-danger" data-bs-toggle="tooltip" title="Hủy đơn hàng">
                                                 <i class="bi bi-trash"></i>
                                             </a>
                                         </div>
@@ -101,7 +106,6 @@
                 </table>
             </div>
 
-            <!-- Phân trang -->
             <div class="d-flex justify-content-between align-items-center mt-3">
                 <div>
                     <span class="text-muted">Hiển thị 1-10 trên tổng số @Model.Count() đơn hàng</span>
@@ -126,7 +130,6 @@
 
 @section Scripts {
     <script>
-        // Kích hoạt tooltips
         var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
         var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
             return new bootstrap.Tooltip(tooltipTriggerEl)

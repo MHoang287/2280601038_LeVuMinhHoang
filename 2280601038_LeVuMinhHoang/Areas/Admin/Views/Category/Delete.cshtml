@@ -1,36 +1,43 @@
 ﻿@model _2280601038_LeVuMinhHoang.Models.Category
 
 @{
-    ViewData["Title"] = "Xóa danh mục";
+    ViewData["Title"] = "Xóa Danh mục Sản phẩm";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <div class="container mt-4">
     <div class="row justify-content-center">
         <div class="col-md-6">
-            <div class="card shadow border-danger">
-                <div class="card-header bg-danger text-white">
-                    <h3 class="mb-0"><i class="bi bi-exclamation-triangle me-2"></i>Xóa danh mục</h3>
+            <div class="card shadow-lg border-0 rounded-lg border-danger">
+                <div class="card-header bg-gradient-danger text-white py-3">
+                    <h3 class="mb-0 d-flex align-items-center">
+                        <i class="bi bi-exclamation-triangle-fill me-3"></i>Xác nhận Xóa Danh mục
+                    </h3>
                 </div>
                 <div class="card-body">
-                    <div class="alert alert-warning">
-                        <i class="bi bi-exclamation-circle me-2"></i>
-                        <strong>Cảnh báo:</strong> Bạn có chắc chắn muốn xóa danh mục này? Hành động này không thể hoàn tác.
+                    <div class="alert alert-warning d-flex align-items-center" role="alert">
+                        <i class="bi bi-shield-exclamation me-3 fs-4"></i>
+                        <div>
+                            <strong>Cảnh báo:</strong> Bạn có chắc chắn muốn xóa danh mục này? Hành động này không thể hoàn tác.
+                        </div>
                     </div>
 
-                    <div class="card mb-3">
-                        <div class="card-body">
-                            <h5 class="card-title">Thông tin danh mục</h5>
+                    <div class="card mb-3 border-light">
+                        <div class="card-body bg-light">
+                            <h5 class="card-title">
+                                <i class="bi bi-info-circle me-2 text-primary"></i>Thông tin Danh mục
+                            </h5>
                             <div class="mb-2">
                                 <label class="fw-bold">Tên danh mục:</label>
-                                <span class="ms-2">@Model.Name</span>
+                                <span class="ms-2 text-primary">@Model.Name</span>
                             </div>
 
                             @if (Model.Products?.Count > 0)
                             {
-                                <div class="alert alert-danger">
+                                <div class="alert alert-danger mt-3" role="alert">
                                     <i class="bi bi-exclamation-octagon me-2"></i>
-                                    Danh mục này hiện có <strong>@Model.Products.Count</strong> sản phẩm. Việc xóa danh mục có thể ảnh hưởng đến các sản phẩm liên quan.
+                                    Danh mục này hiện có <strong>@Model.Products.Count</strong> sản phẩm.
+                                    Việc xóa có thể ảnh hưởng đến các sản phẩm liên quan.
                                 </div>
                             }
                         </div>
@@ -39,11 +46,11 @@
                     <form asp-action="Delete" method="post">
                         <input type="hidden" asp-for="Id" />
                         <div class="d-flex justify-content-between mt-4">
-                            <a asp-action="Index" class="btn btn-secondary">
-                                <i class="bi bi-arrow-left me-1"></i> Quay lại
+                            <a asp-action="Index" class="btn btn-outline-secondary">
+                                <i class="bi bi-arrow-left me-1"></i>Hủy
                             </a>
                             <button type="submit" class="btn btn-danger">
-                                <i class="bi bi-trash me-1"></i> Xác nhận xóa
+                                <i class="bi bi-trash-fill me-1"></i>Xác nhận Xóa
                             </button>
                         </div>
                     </form>

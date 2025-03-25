@@ -1,35 +1,53 @@
 ﻿@model _2280601038_LeVuMinhHoang.Models.Category
 
 @{
-    ViewData["Title"] = "Cập nhật danh mục";
+    ViewData["Title"] = "Cập nhật Danh mục Sản phẩm";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <div class="container mt-4">
     <div class="row justify-content-center">
         <div class="col-md-6">
-            <div class="card shadow">
-                <div class="card-header bg-primary text-white">
-                    <h3 class="mb-0"><i class="bi bi-pencil-square me-2"></i>Cập nhật danh mục</h3>
+            <div class="card shadow-lg border-0 rounded-lg">
+                <div class="card-header bg-gradient-primary text-white py-3">
+                    <h3 class="mb-0 d-flex align-items-center">
+                        <i class="bi bi-pencil-square me-3"></i>Chỉnh sửa Danh mục
+                    </h3>
                 </div>
                 <div class="card-body">
                     <form asp-action="Update" method="post">
                         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                         <input type="hidden" asp-for="Id" />
+
                         <div class="mb-3">
-                            <label asp-for="Name" class="form-label fw-medium">Tên danh mục</label>
-                            <div class="input-group">
-                                <span class="input-group-text"><i class="bi bi-tag"></i></span>
-                                <input asp-for="Name" class="form-control" placeholder="Nhập tên danh mục" required />
+                            <label asp-for="Name" class="form-label fw-semibold">
+                                <i class="bi bi-tag-fill me-2 text-primary"></i>Tên Danh mục
+                            </label>
+                            <div class="input-group has-validation">
+                                <span class="input-group-text bg-light"><i class="bi bi-tag text-primary"></i></span>
+                                <input asp-for="Name" class="form-control"
+                                       placeholder="Nhập tên danh mục"
+                                       required
+                                       oninvalid="this.setCustomValidity('Vui lòng nhập tên danh mục')"
+                                       oninput="this.setCustomValidity('')" />
+                                <div class="invalid-feedback">
+                                    Vui lòng nhập tên danh mục
+                                </div>
                             </div>
                             <span asp-validation-for="Name" class="text-danger"></span>
                         </div>
+
+                        <div class="alert alert-info" role="alert">
+                            <i class="bi bi-info-circle me-2"></i>
+                            Bạn đang chỉnh sửa danh mục: <strong>@Model.Name</strong>
+                        </div>
+
                         <div class="d-flex justify-content-between mt-4">
                             <a asp-action="Index" class="btn btn-outline-secondary">
-                                <i class="bi bi-arrow-left me-1"></i> Quay lại
+                                <i class="bi bi-arrow-left me-1"></i>Quay lại
                             </a>
                             <button type="submit" class="btn btn-primary">
-                                <i class="bi bi-save me-1"></i> Lưu thay đổi
+                                <i class="bi bi-cloud-upload-fill me-1"></i>Lưu Thay đổi
                             </button>
                         </div>
                     </form>

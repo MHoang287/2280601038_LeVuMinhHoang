@@ -6,57 +6,68 @@
 }
 
 <div class="container mt-4">
-    <div class="card shadow-sm border-danger">
-        <div class="card-header bg-danger text-white">
-            <h4 class="mb-0">Xác nhận xóa sản phẩm</h4>
-        </div>
-        <div class="card-body">
-            <div class="alert alert-warning">
-                <i class="bi bi-exclamation-triangle-fill me-2"></i>
-                Bạn có chắc chắn muốn xóa sản phẩm này? Hành động này không thể hoàn tác.
-            </div>
-
-            <div class="row mt-4">
-                <div class="col-md-4 text-center mb-3">
-                    @if (!string.IsNullOrEmpty(Model.ImageUrl))
-                    {
-                        <img src="@Model.ImageUrl" alt="@Model.Name" class="img-fluid rounded mb-3" style="max-height: 200px; object-fit: contain;" />
-                    }
-                    else
-                    {
-                        <div class="bg-light rounded p-4 text-center">
-                            <i class="bi bi-image text-muted" style="font-size: 5rem;"></i>
+    <div class="row justify-content-center">
+        <div class="col-md-10 col-lg-8">
+            <div class="card border-danger shadow-lg">
+                <div class="card-header bg-danger text-white py-3">
+                    <h4 class="mb-0 d-flex align-items-center">
+                        <i class="bi bi-trash me-3"></i>Xác nhận xóa sản phẩm
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-5 text-center mb-3">
+                            @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                            {
+                                <img src="@Model.ImageUrl" alt="@Model.Name" class="img-fluid rounded shadow-sm" style="max-height: 250px; object-fit: cover;" />
+                            }
+                            else
+                            {
+                                <div class="bg-light rounded p-4 text-center">
+                                    <i class="bi bi-image text-muted" style="font-size: 6rem;"></i>
+                                    <p class="text-muted mt-2">Không có hình ảnh</p>
+                                </div>
+                            }
                         </div>
-                    }
-                </div>
-                <div class="col-md-8">
-                    <h4 class="text-danger mb-3">@Model.Name</h4>
-                    <dl class="row">
-                        <dt class="col-sm-3">Giá</dt>
-                        <dd class="col-sm-9">$@Model.Price.ToString("N2")</dd>
+                        <div class="col-md-7">
+                            <h3 class="text-danger mb-3">@Model.Name</h3>
+                            <div class="card mb-3">
+                                <div class="card-body">
+                                    <dl class="row mb-0">
+                                        <dt class="col-sm-4">Giá</dt>
+                                        <dd class="col-sm-8 text-success">₫@Model.Price.ToString("N0")</dd>
 
-                        <dt class="col-sm-3">Danh mục</dt>
-                        <dd class="col-sm-9">
-                            <span class="badge bg-primary">@Html.DisplayFor(model => model.Category.Name)</span>
-                        </dd>
+                                        <dt class="col-sm-4">Danh mục</dt>
+                                        <dd class="col-sm-8">
+                                            <span class="badge bg-primary">@Model.Category.Name</span>
+                                        </dd>
 
-                        <dt class="col-sm-3">Mô tả</dt>
-                        <dd class="col-sm-9">@Html.DisplayFor(model => model.Description)</dd>
-                    </dl>
+                                        <dt class="col-sm-4">Mô tả</dt>
+                                        <dd class="col-sm-8">@(string.IsNullOrEmpty(Model.Description) ? "Không có mô tả" : Model.Description)</dd>
+                                    </dl>
+                                </div>
+                            </div>
+
+                            <div class="alert alert-warning" role="alert">
+                                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                                Bạn có chắc chắn muốn xóa sản phẩm này? Hành động này không thể hoàn tác.
+                            </div>
+                        </div>
+                    </div>
+
+                    <form asp-action="Delete" class="mt-4">
+                        <input type="hidden" asp-for="Id" />
+                        <div class="d-flex justify-content-end">
+                            <a asp-action="Index" class="btn btn-outline-secondary me-2">
+                                <i class="bi bi-x-circle me-1"></i> Hủy
+                            </a>
+                            <button type="submit" class="btn btn-danger">
+                                <i class="bi bi-trash me-1"></i> Xác nhận xóa
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
-
-            <form asp-action="Delete" class="mt-4">
-                <input type="hidden" asp-for="Id" />
-                <div class="d-flex">
-                    <button type="submit" class="btn btn-danger me-2">
-                        <i class="bi bi-trash me-1"></i> Xác nhận xóa
-                    </button>
-                    <a asp-action="Index" class="btn btn-secondary">
-                        <i class="bi bi-x-circle me-1"></i> Hủy
-                    </a>
-                </div>
-            </form>
         </div>
     </div>
 </div>

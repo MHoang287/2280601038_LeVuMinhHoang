@@ -19,7 +19,7 @@ namespace _2280601038_LeVuMinhHoang.Areas.Admin.Controllers
         // GET: Admin/Order
         public async Task<IActionResult> Index()
         {
-            var orders = await _context.Orders.Include(o => o.UserId).ToListAsync();
+            var orders = await _context.Orders.Include(o => o.ApplicationUser).ToListAsync();
             return View(orders);
         }
 
