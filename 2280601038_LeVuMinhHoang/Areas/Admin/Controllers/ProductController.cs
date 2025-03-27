@@ -27,7 +27,7 @@ namespace _2280601038_LeVuMinhHoang.Areas.Admin.Controllers
             return View(products);
         }
 
-        public async Task<IActionResult> Create()
+        public async Task<IActionResult> Add()
         {
             var categories = await _categoryRepository.GetAllAsync();
             ViewBag.Categories = new SelectList(categories, "Id", "Name");
@@ -36,7 +36,7 @@ namespace _2280601038_LeVuMinhHoang.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Product product)
+        public async Task<IActionResult> Add(Product product)
         {
             if (ModelState.IsValid)
             {
@@ -48,7 +48,7 @@ namespace _2280601038_LeVuMinhHoang.Areas.Admin.Controllers
             return View(product);
         }
 
-        public async Task<IActionResult> Edit(int id)
+        public async Task<IActionResult> Update(int id)
         {
             var product = await _productRepository.GetByIdAsync(id);
             if (product == null)
@@ -62,7 +62,7 @@ namespace _2280601038_LeVuMinhHoang.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, Product product)
+        public async Task<IActionResult> Update(int id, Product product)
         {
             if (id != product.Id)
             {
