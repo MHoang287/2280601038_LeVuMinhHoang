@@ -2,6 +2,8 @@
 using Microsoft.EntityFrameworkCore;
 using _2280601038_LeVuMinhHoang.Models;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
+using _2280601038_LeVuMinhHoang.Extensions;
 
 namespace _2280601038_LeVuMinhHoang.Areas.Admin.Controllers
 {
@@ -124,6 +126,110 @@ namespace _2280601038_LeVuMinhHoang.Areas.Admin.Controllers
             _context.Orders.Remove(order);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
+        }
+
+        [Authorize]
+        public IActionResult Checkout()
+        {
+            try
+            {
+                var cart = HttpContext.Session.GetObject<ShoppingCart>("Cart") ?? new ShoppingCart();
+
+                // Đảm bảo Items không null
+                cart.Items ??= new List<CartItem>();
+
+                var order = new Order
+                {
+                    SubTotal = cart.GetSubTotal(),
+                    ShippingFee = cart.GetSubTotal() >= 500000 ? 0 : 20000,
+                    Tax = cart.CalculateTax(cart.GetSubTotal()),
+                    TotalPrice = cart.CalculateTotal(
+                        cart.GetSubTotal(),
+                        cart.GetSubTotal() >= 500000 ? 0 : 20000,
+                        cart.CalculateTax(cart.GetSubTotal()))
+                };
+
+                ViewBag.Cart = cart;
+                return View(order);
+            }
+            catch (Exception ex)
+            {
+                // Log lỗi và chuyển hướng về trang giỏ hàng
+                return RedirectToAction("Index", "ShoppingCart");
+            }
+        }
+
+        [HttpPost]
+        [Authorize]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Checkout(Order order)
+        {
+            try
+            {
+                var cart = HttpContext.Session.GetObject<ShoppingCart>("Cart");
+
+                // Kiểm tra giỏ hàng hợp lệ
+                if (cart == null || cart.Items == null || !cart.Items.Any())
+                {
+                    return RedirectToAction("Index", "ShoppingCart");
+                }
+
+                if (ModelState.IsValid)
+                {
+                    // Điền thông tin đơn hàng
+                    order.UserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                    order.OrderDate = DateTime.Now;
+                    order.SubTotal = cart.GetSubTotal();
+                    order.ShippingFee = cart.GetSubTotal() >= 500000 ? 0 : 20000;
+                    order.Tax = cart.CalculateTax(cart.GetSubTotal());
+                    order.TotalPrice = cart.CalculateTotal(order.SubTotal, order.ShippingFee, order.Tax);
+                    order.OrderDetails = new List<OrderDetail>();
+
+                    // Thêm chi tiết đơn hàng
+                    foreach (var item in cart.Items.Where(i => i != null))
+                    {
+                        order.OrderDetails.Add(new OrderDetail
+                        {
+                            ProductId = item.ProductId,
+                            Quantity = item.Quantity,
+                            Price = item.Price
+                        });
+                    }
+
+                    // Lưu đơn hàng
+                    _context.Orders.Add(order);
+                    await _context.SaveChangesAsync();
+
+                    // Xóa giỏ hàng
+                    HttpContext.Session.Remove("Cart");
+
+                    return RedirectToAction("Confirmation", new { id = order.Id });
+                }
+
+                ViewBag.Cart = cart;
+                return View(order);
+            }
+            catch (Exception ex)
+            {
+                // Log lỗi và hiển thị thông báo
+                ModelState.AddModelError("", "Có lỗi xảy ra khi xử lý đơn hàng: " + ex.Message);
+                return View(order);
+            }
+        }
+
+        public IActionResult Confirmation(int id)
+        {
+            var order = _context.Orders
+                .Include(o => o.OrderDetails)
+                .ThenInclude(od => od.Product)
+                .FirstOrDefault(o => o.Id == id);
+
+            if (order == null)
+            {
+                return NotFound();
+            }
+
+            return View(order);
         }
     }
 }

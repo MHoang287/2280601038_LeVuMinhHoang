@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 
+
 namespace _2280601038_LeVuMinhHoang.Controllers
 {
     [Authorize]
@@ -127,40 +128,51 @@ namespace _2280601038_LeVuMinhHoang.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult UpdateCartItem(int productId, int quantity)
+        public async Task<IActionResult> UpdateCartItem(int productId, int quantity)
         {
             try
             {
-                if (quantity <= 0)
-                {
-                    return RemoveFromCart(productId);
-                }
-
                 var cartKey = GetCartSessionKey();
                 var cart = HttpContext.Session.GetObjectFromJson<ShoppingCart>(cartKey);
                 if (cart == null)
                 {
-                    TempData["ErrorMessage"] = "Your cart is empty";
-                    return RedirectToAction("Index");
+                    return Json(new { success = false, message = "Giỏ hàng trống" });
                 }
 
                 var item = cart.Items.FirstOrDefault(i => i.ProductId == productId);
                 if (item == null)
                 {
-                    TempData["ErrorMessage"] = "Product not found in cart";
-                    return RedirectToAction("Index");
+                    return Json(new { success = false, message = "Sản phẩm không tồn tại trong giỏ hàng" });
                 }
 
-                item.Quantity = quantity;
+                // Tính toán số lượng mới
+                int newQuantity = item.Quantity + quantity;
+
+                // Kiểm tra số lượng tối thiểu là 1
+                if (newQuantity < 1)
+                {
+                    newQuantity = 1;
+                }
+
+                // Kiểm tra số lượng tồn kho (nếu cần)
+                // var product = await _productRepository.GetByIdAsync(productId);
+                // if (newQuantity > product.StockQuantity) {
+                //     return Json(new { success = false, message = "Số lượng vượt quá tồn kho" });
+                // }
+
+                item.Quantity = newQuantity;
                 HttpContext.Session.SetObjectAsJson(cartKey, cart);
-                TempData["SuccessMessage"] = "Cart updated successfully";
-                return RedirectToAction("Index");
+
+                return Json(new
+                {
+                    success = true,
+                    newQuantity = newQuantity
+                });
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Error updating cart item {productId}");
-                TempData["ErrorMessage"] = "Error updating cart";
-                return RedirectToAction("Index");
+                _logger.LogError(ex, $"Lỗi khi cập nhật số lượng sản phẩm {productId}");
+                return Json(new { success = false, message = "Lỗi khi cập nhật giỏ hàng" });
             }
         }
 
@@ -230,7 +242,23 @@ namespace _2280601038_LeVuMinhHoang.Controllers
                     return RedirectToAction("Index");
                 }
 
-                return View(new Order());
+                // Tính toán các giá trị
+                decimal subTotal = cart.GetSubTotal();
+                decimal tax = cart.CalculateTax(subTotal);
+                decimal shippingFee = 20000; // Phí ship mặc định
+                decimal total = cart.CalculateTotal(subTotal, shippingFee, tax);
+
+                // Truyền dữ liệu qua ViewBag
+                ViewBag.SubTotal = subTotal;
+                ViewBag.Tax = tax;
+                ViewBag.Total = total;
+
+                var order = new Order
+                {
+                    ShippingFee = shippingFee
+                };
+
+                return View(order);
             }
             catch (Exception ex)
             {
@@ -269,9 +297,16 @@ namespace _2280601038_LeVuMinhHoang.Controllers
                 using var transaction = await _context.Database.BeginTransactionAsync();
                 try
                 {
+                    // Tính toán các khoản phí
+                    decimal subTotal = cart.GetSubTotal();
+                    decimal tax = cart.CalculateTax(subTotal);
+                    decimal total = cart.CalculateTotal(subTotal, order.ShippingFee, tax);
+
                     order.UserId = user.Id;
                     order.OrderDate = DateTime.UtcNow;
-                    order.TotalPrice = cart.GetTotal();
+                    order.SubTotal = subTotal;
+                    order.Tax = tax;
+                    order.TotalPrice = total;
                     order.OrderDetails = cart.Items.Select(i => new OrderDetail
                     {
                         ProductId = i.ProductId,

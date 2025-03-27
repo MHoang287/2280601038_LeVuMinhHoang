@@ -37,9 +37,15 @@
                                             </td>
                                             <td class="text-center align-middle">
                                                 <div class="btn-group" role="group">
-                                                    <button type="button" class="btn btn-sm btn-outline-secondary">-</button>
-                                                    <span class="btn btn-sm">@item.Quantity</span>
-                                                    <button type="button" class="btn btn-sm btn-outline-secondary">+</button>
+                                                    <button type="button" class="btn btn-sm btn-outline-secondary decrease-quantity"
+                                                            data-product-id="@item.ProductId" @(item.Quantity <= 1 ? "disabled" : "")>
+                                                        -
+                                                    </button>
+                                                    <span class="btn btn-sm quantity-display">@item.Quantity</span>
+                                                    <button type="button" class="btn btn-sm btn-outline-secondary increase-quantity"
+                                                            data-product-id="@item.ProductId">
+                                                        +
+                                                    </button>
                                                 </div>
                                             </td>
                                             <td class="text-center align-middle">@item.Price.ToString("N0") ₫</td>
@@ -64,11 +70,58 @@
                     <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary">
                         <i class="bi bi-arrow-left me-2"></i> Tiếp tục mua sắm
                     </a>
-                    <div class="text-end">
-                        <h4 class="mb-3">Tổng cộng: <span class="text-primary">@Model.GetTotal().ToString("N0") ₫</span></h4>
-                        <a asp-action="Checkout" class="btn btn-primary btn-lg">
-                            Tiến hành thanh toán <i class="bi bi-bag-check ms-2"></i>
+                    <div class="d-flex justify-content-between align-items-center mt-4">
+                        <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary px-4 py-2">
+                            <i class="bi bi-arrow-left me-2"></i> Tiếp tục mua sắm
                         </a>
+
+                        <div class="text-end" style="min-width: 320px;">
+                            <div class="card border-0 shadow-sm bg-light">
+                                <div class="card-body p-4">
+                                    <!-- Tiêu đề -->
+                                    <h5 class="card-title text-uppercase fw-bold text-muted mb-3">Thông tin thanh toán</h5>
+
+                                    <!-- Chi tiết giá -->
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span class="text-muted">Tổng tiền hàng:</span>
+                                        <span class="fw-medium">@Model.GetSubTotal().ToString("N0") ₫</span>
+                                    </div>
+
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span class="text-muted">Phí vận chuyển:</span>
+                                        <span class="fw-medium">20,000 ₫</span>
+                                    </div>
+
+                                    <div class="d-flex justify-content-between mb-3">
+                                        <span class="text-muted">Thuế VAT (10%):</span>
+                                        <span class="fw-medium">@Model.CalculateTax(Model.GetSubTotal()).ToString("N0") ₫</span>
+                                    </div>
+
+                                    <!-- Phân cách -->
+                                    <hr class="my-2 border-secondary opacity-25">
+
+                                    <!-- Tổng cộng -->
+                                    <div class="d-flex justify-content-between align-items-center mt-3 mb-3">
+                                        <h5 class="mb-0 fw-bold">Tổng thanh toán:</h5>
+                                        <h4 class="mb-0 text-primary fw-bold">@Model.CalculateTotal(Model.GetSubTotal(), 20000, Model.CalculateTax(Model.GetSubTotal())).ToString("N0") ₫</h4>
+                                    </div>
+
+                                    <!-- Nút thanh toán -->
+                                    <div class="d-grid mt-4">
+                                        <a asp-action="Checkout" class="btn btn-primary btn-lg py-3 fw-bold">
+                                            <i class="bi bi-credit-card-fill me-2"></i> THANH TOÁN NGAY
+                                        </a>
+                                    </div>
+
+                                    <!-- Ưu đãi -->
+                                    <div class="text-center mt-3">
+                                        <small class="text-success">
+                                            <i class="bi bi-tag-fill me-1"></i> Miễn phí vận chuyển cho đơn từ 500,000₫
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             }
@@ -85,3 +138,44 @@
         </div>
     </div>
 </div>
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Xử lý tăng số lượng
+            $(document).on('click', '.increase-quantity', function() {
+                const productId = $(this).data('product-id');
+                updateQuantity(productId, 1);
+            });
+
+            // Xử lý giảm số lượng
+            $(document).on('click', '.decrease-quantity', function() {
+                const productId = $(this).data('product-id');
+                updateQuantity(productId, -1);
+            });
+
+            function updateQuantity(productId, change) {
+                $.ajax({
+                    url: '@Url.Action("UpdateCartItem", "ShoppingCart")',
+                    type: 'POST',
+                    data: {
+                        productId: productId,
+                        quantity: change
+                    },
+                    headers: {
+                        'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            location.reload(); // Tải lại trang để cập nhật giỏ hàng
+                        } else {
+                            alert(response.message);
+                        }
+                    },
+                    error: function() {
+                        alert('Có lỗi xảy ra khi cập nhật giỏ hàng');
+                    }
+                });
+            }
+        });
+    </script>
+}

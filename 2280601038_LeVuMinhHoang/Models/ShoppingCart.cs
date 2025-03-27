@@ -3,33 +3,45 @@
     public class ShoppingCart
     {
         public List<CartItem> Items { get; set; } = new List<CartItem>();
+
         public void AddItem(CartItem item)
         {
-            var existingItem = Items.FirstOrDefault(i => i.ProductId ==
-            item.ProductId);
+            if (item == null) return;
+
+            var existingItem = Items?.FirstOrDefault(i => i.ProductId == item.ProductId);
             if (existingItem != null)
             {
                 existingItem.Quantity += item.Quantity;
             }
             else
             {
-                Items.Add(item);
+                Items?.Add(item);
             }
         }
+
         public void RemoveItem(int productId)
         {
-            Items.RemoveAll(i => i.ProductId == productId);
+            Items?.RemoveAll(i => i.ProductId == productId);
         }
-        public decimal GetTotal()
+
+        public decimal GetSubTotal()
         {
-            return Items.Sum(i => i.Price * i.Quantity);
+            return Items?.Sum(i => i.Price * i.Quantity) ?? 0;
+        }
+
+        public decimal CalculateTax(decimal subTotal, decimal taxRate = 0.1m)
+        {
+            return subTotal * taxRate;
+        }
+
+        public decimal CalculateTotal(decimal subTotal, decimal shippingFee, decimal tax)
+        {
+            return subTotal + shippingFee + tax;
         }
 
         public void Clear()
         {
-            Items.Clear();
+            Items?.Clear();
         }
-
-
     }
 }

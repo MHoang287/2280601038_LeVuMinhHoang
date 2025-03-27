@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using _2280601038_LeVuMinhHoang.ViewComponents;
+using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
